@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+data/
+recordings/
+.env
+.env.*
+*.db
+*.db-wal
+*.db-shm
+.venv/
