@@ -17,7 +17,7 @@ Open Ollama and install the tools-capable model if needed:
 ollama pull qwen3:4b
 ```
 
-Open a terminal in this `focusdesk` folder:
+Open a terminal in the project folder containing `task_agent.py`:
 
 ```powershell
 python task_agent.py
@@ -187,6 +187,8 @@ contain private information: local database and transcript folders are git-ignor
 ```powershell
 python -m unittest discover -s tests -v
 python live_check.py
+# Optional: only the ambiguous-task scenario
+python live_check.py --case 2
 ```
 
 The automated tests use temporary databases and scripted model replies to verify

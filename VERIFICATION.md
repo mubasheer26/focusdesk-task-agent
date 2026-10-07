@@ -23,11 +23,34 @@ The initial installed model was tested through `python live_check.py`.
 | Invalid temporary database | Correct storage error; existing bytes preserved |
 
 These results are why deterministic tests alone are insufficient. No failed
-model workflow is described as a successful update. A second model evaluation is
-being prepared; this report will be updated with its actual outcome.
+model workflow is described as a successful update. The Qwen3 observations below record the subsequent checks.
 
-## Qwen3 configuration
+## Qwen3 checks on 7 October 2026
 
-The default model is now qwen3:4b. The client requests non-thinking mode and
-removes legacy thinking markup from final responses. The complete real-model
-scenario run is still in progress; no full live-pass claim is made yet.
+The default model is qwen3:4b. The client requests non-thinking mode and
+removes legacy thinking markup from final responses.
+
+- A real add_task call saved Practice interview questions with low priority.
+- A clean final response confirmed the saved task after the response-format fix.
+- The initial broader run encountered a Windows terminal encoding error when the
+  model returned an emoji. live_check.py now explicitly uses UTF-8 output.
+- The focused rerun used `python live_check.py --case 2`.
+- For two Python tasks, the model called find_tasks and the application correctly
+  asked which task ID the user meant. Neither task was changed.
+- The follow-up Complete task #2 encountered an Ollama request failure. Completion
+  was NOT verified; the final database still contained two open tasks.
+
+The core five-tool implementation and multi-step application flow pass automated
+checks, but a complete successful real-model completion/priority workflow with
+Qwen3 has not yet been established on this machine. README conversations are
+illustrative, not claimed transcripts. Model behaviour and CPU response times
+remain practical limitations.
+
+Run individual scenarios with `python live_check.py --case 1` through `--case 5`,
+or omit --case for the full suite. These use temporary databases, not real tasks.
+
+## Public source verification
+
+The public GitHub archive opened without authentication. Published task_agent.py,
+README.md, LEARN_TANGLISH.md, tests/test_task_agent.py and .gitignore were compared
+with local source and matched exactly before this final documentation update.

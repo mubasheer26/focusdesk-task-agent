@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import sys
 import tempfile
 from pathlib import Path
 
@@ -9,8 +10,10 @@ import task_agent as app
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", default="qwen3:4b")
+    parser.add_argument("--case", type=int, choices=range(1, 6), help="Run one scenario (1-5); default all")
     args = parser.parse_args()
     cases = [
         ("Create + multi-step priority change", ["Review resume"],
@@ -27,6 +30,8 @@ def main():
     results = []
     with tempfile.TemporaryDirectory() as folder:
         for index, (label, seeds, prompts) in enumerate(cases):
+            if args.case is not None and args.case != index + 1:
+                continue
             print("\nCASE: " + label, flush=True)
             path = Path(folder) / f"case-{index}.db"
             store = app.TaskStore(path)
@@ -49,7 +54,8 @@ def main():
     output = Path(__file__).resolve().parent / "recordings"
     output.mkdir(exist_ok=True)
     model_label = "".join(character if character.isalnum() else "_" for character in args.model)
-    report = output / f"live-check-{model_label}.json"
+    case_label = str(args.case) if args.case is not None else "all"
+    report = output / f"live-check-{model_label}-{case_label}.json"
     report.write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"\nSaved {report.name} in recordings. Review actual behaviour; this is not an automatic pass claim.")
 
