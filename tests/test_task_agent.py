@@ -187,6 +187,17 @@ class TaskTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "Ollama unavailable"):
                 app.chat([], "test")
 
+    def test_qwen_response_cleanup_preserves_history(self):
+        messages = [{"role": "system", "content": app.SYSTEM}]
+        body = {"message": {"role": "assistant", "content": "internal text</think>Added #1.",
+                            "thinking": "internal text"}}
+        with patch.object(app.urllib.request, "urlopen", return_value=io.BytesIO(json.dumps(body).encode())) as request:
+            answer = app.chat(messages, "qwen3:4b")
+        self.assertEqual(answer["content"], "Added #1.")
+        self.assertNotIn("thinking", answer)
+        self.assertEqual(messages[0]["content"], app.SYSTEM)
+        self.assertFalse(json.loads(request.call_args.args[0].data)["think"])
+
     def test_session_memory_reaches_later_turn(self):
         history = [{"role": "system", "content": app.SYSTEM}, {"role": "user", "content": "Add CV"}]
         replies = iter([reply("add_task", title="CV"), {"role": "assistant", "content": "Added #1 CV"}])
